@@ -267,7 +267,7 @@ ne eb = zero , eb
 ne (0S b) = zero , b
 ne (1S b) = suc (proj₁ $ ne b) , (proj₂ $ ne b)
 
--- Parse the operator structire
+-- Parse the operator structure
 {-# NON_TERMINATING #-}
 PreParse : Binary → List pseudodB
 PreParse eb = []
@@ -328,7 +328,7 @@ add = λₜ (λₜ (λₜ (λₜ ((vₜ 3 · vₜ 1) · ((vₜ 2 · vₜ 1) · v
 twoplustwo : deBrujin
 twoplustwo = (add · two) · two
 
--- to test, run: Nev (add · (CN 3) · (CN 5))
+-- to test, run: NEV (add · (CN 3) · (CN 5))
 
 
 -- ============= Stuff for IO ===========
