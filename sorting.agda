@@ -24,7 +24,7 @@ mutual
 {- equivalent definition as data
  data _≤L_ {TO} (a : TotalOrder.Carrier TO) : SortedList TO → Set where
   tt : a ≤L []
-  _,_  : ∀ {x}{xs}{p} → TotalOrder._≤_ TO a x → a ≤L xs → _≤L_ a (cons x xs p)
+  _,_  : ∀ {x}{xs}{p} → TotalOrder._≤_ TO a x → a ≤L xs → a ≤L (cons x xs p)
 -}
 
 ForgetSorting : ∀ {TO} → SortedList TO → List $ TotalOrder.Carrier TO
