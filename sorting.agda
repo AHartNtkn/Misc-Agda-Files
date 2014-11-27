@@ -58,9 +58,6 @@ iSort {TO} = ForgetSorting {TO} ∘ InsertionSort
 lemma₃ : ∀ {TO} a b → (xs : SortedList TO) → (TotalOrder._≤_ TO a b) → (p : b ≤L xs) → a ≤L (cons b xs p)
 lemma₃ a b xs p1 p2 = p1 , lemma₁ a b xs p1 p2
 
-lemma₄ : ∀ {TO} a b → (xs : SortedList TO) → ∀ p → (p2 : a ≤L (cons b xs p)) → (TotalOrder._≤_ TO a b)
-lemma₄ _ _ _ _ (p , _) = p
-
 mutual
  merge : ∀ {TO} → SortedList TO → SortedList TO → SortedList TO
  merge [] [] = []
@@ -76,8 +73,8 @@ mutual
  lemmaₘ a [] (cons a₁ l2 x) _ p2 = p2
  lemmaₘ a (cons a₁ l1 x) [] p1 _ = p1
  lemmaₘ {TO} a (cons a₁ l1 x) (cons a₂ l2 y) (a≤a₁ , a≤l1) (a≤a₂ , a≤l2) with TotalOrder.total TO a₁ a₂
- ... | inj₁ a₁≤a₂ = lemma₄ a a₁ l1 x (a≤a₁ , a≤l1) , lemmaₘ a l1 (cons a₂ l2 y) a≤l1 (a≤a₂ , a≤l2)
- ... | inj₂ a₁≥a₂ = lemma₄ a a₂ l2 y (a≤a₂ , a≤l2) , lemmaₘ a (cons a₁ l1 x) l2 (a≤a₁ , a≤l1) a≤l2
+ ... | inj₁ a₁≤a₂ = a≤a₁ , lemmaₘ a l1 (cons a₂ l2 y) a≤l1 (a≤a₂ , a≤l2)
+ ... | inj₂ a₁≥a₂ = a≤a₂ , lemmaₘ a (cons a₁ l1 x) l2 (a≤a₁ , a≤l1) a≤l2
 
 splitList : ∀ {l} {A : Set l} → List A → List A × List A
 splitList l = take (⌊ length l /2⌋) l , drop (⌊ length l /2⌋) l
