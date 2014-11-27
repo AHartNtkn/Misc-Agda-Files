@@ -63,7 +63,7 @@ mutual
  merge [] [] = []
  merge [] (cons a l2 x) = cons a l2 x
  merge (cons a l1 x) [] = cons a l1 x
- merge {TO} (cons a l1 x) (cons b l2 y) with (IsTotalOrder.total ∘ TotalOrder.isTotalOrder) TO a b
+ merge {TO} (cons a l1 x) (cons b l2 y) with TotalOrder.total TO a b
  ... | inj₁ a≤b = cons a (merge l1 (cons b l2 y)) (lemmaₘ a l1 (cons b l2 y) x (lemma₃ a b l2 a≤b y))
  ... | inj₂ b≤a = cons b (merge (cons a l1 x) l2) (lemmaₘ b (cons a l1 x) l2 (lemma₃ b a l1 b≤a x) y)
 
