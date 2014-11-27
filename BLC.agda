@@ -309,16 +309,15 @@ U = Eval ∘ ℕ→λ
 
 
 -- Church numeral generator for testing
-Nest : ∀ {l} {A : Set l} → ℕ → (A → A) → A → A
-Nest zero f a = a
-Nest (suc zero) f a = f a
-Nest (suc (suc n)) f a = Nest (suc n) f (f a)
+Nest : ∀ {l} {A : Set l} → (A → A) → A → ℕ → A
+Nest f a 0 = a
+Nest f a (suc n) = Nest f (f a) n
 
 ChurchNumeral : ℕ → ℕ → ℕ → LambdaTerm
-ChurchNumeral n f x = λₜ f (λₜ x (Nest n (_·_ (vₜ f)) (vₜ x)))
+ChurchNumeral n f x = λₜ f (λₜ x (Nest (_·_ (vₜ f)) (vₜ x) n))
 
 CN : ℕ → deBrujin
-CN n = λₜ (λₜ (Nest n (_·_ (vₜ 1)) (vₜ 0)))
+CN n = λₜ (λₜ (Nest (_·_ (vₜ 1)) (vₜ 0) n))
 
 two = CN 2
 
