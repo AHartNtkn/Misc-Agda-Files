@@ -17,14 +17,14 @@ mutual
   []  : SortedList TO
   cons : ∀ a → (ls : SortedList TO) → a ≤L ls → SortedList TO
 
- _≤L_ : ∀ {TO} → TotalOrder.Carrier TO → SortedList TO → Set
- a ≤L [] = ⊤
- _≤L_ {TO} a (cons x xs _) = (TotalOrder._≤_ TO a x) × (a ≤L xs)
-
-{- equivalent definition as data
  data _≤L_ {TO} (a : TotalOrder.Carrier TO) : SortedList TO → Set where
   tt : a ≤L []
   _,_  : ∀ {x}{xs}{p} → TotalOrder._≤_ TO a x → a ≤L xs → a ≤L (cons x xs p)
+
+{- equivalent definition
+ _≤L_ : ∀ {TO} → TotalOrder.Carrier TO → SortedList TO → Set
+ a ≤L [] = ⊤
+ _≤L_ {TO} a (cons x xs _) = (TotalOrder._≤_ TO a x) × (a ≤L xs)
 -}
 
 ForgetSorting : ∀ {TO} → SortedList TO → List $ TotalOrder.Carrier TO
@@ -33,7 +33,7 @@ ForgetSorting (cons a s x) = a ∷ ForgetSorting s
 
 lemma₁ : ∀ {TO} a x → (xs : SortedList TO) → TotalOrder._≤_ TO a x → x ≤L xs → a ≤L xs
 lemma₁ _ _ [] _ _ = tt 
-lemma₁ {TO} a x (cons y xs y≤Lxs) a≤x (x≤y , x≤Lxs) = (TotalOrder.trans TO a≤x x≤y , lemma₁ a x xs a≤x x≤Lxs)
+lemma₁ {TO} a x (cons y xs y≤Lxs) a≤x (x≤y , x≤Lxs) = TotalOrder.trans TO a≤x x≤y , lemma₁ a x xs a≤x x≤Lxs
 
 mutual
  sinsert : ∀ {TO} a → SortedList TO → SortedList TO
@@ -43,12 +43,12 @@ mutual
  ... | inj₂ x≤a = cons x (sinsert a xs) (lemma₂ a x xs x≤a x≤Lxs)
 
  lemma₂ : ∀ {TO} a x → (xs : SortedList TO) → (TotalOrder._≤_ TO x a) → x ≤L xs → x ≤L sinsert a xs
- lemma₂ _ _ [] x≤a _ = (x≤a , tt)
+ lemma₂ _ _ [] x≤a _ = x≤a , tt
  lemma₂ {TO} a x (cons y xs y≤Lxs) x≤a (x≤y , x≤Lxs) with TotalOrder.total TO a y
  -- (x ≤ a) × (x ≤ y) & (x ≤L xs)
- ... | inj₁ a≤y = (x≤a , (x≤y , x≤Lxs))
+ ... | inj₁ a≤y = x≤a , x≤y , x≤Lxs
  -- (x ≤ y) × (x ≤L sinsert a xs)
- ... | inj₂ y≤a = (x≤y , lemma₂ a x xs x≤a x≤Lxs)
+ ... | inj₂ y≤a = x≤y , lemma₂ a x xs x≤a x≤Lxs
 
 InsertionSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
 InsertionSort = foldr sinsert []
