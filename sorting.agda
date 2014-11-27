@@ -44,9 +44,7 @@ mutual
  lemma₂ : ∀ {TO} a x → (xs : SortedList TO) → (TotalOrder._≤_ TO x a) → x ≤L xs → x ≤L sinsert a xs
  lemma₂ _ _ [] x≤a _ = x≤a , tt
  lemma₂ {TO} a x (cons y xs y≤Lxs) x≤a (x≤y , x≤Lxs) with TotalOrder.total TO a y
- -- (x ≤ a) × (x ≤ y) & (x ≤L xs)
  ... | inj₁ a≤y = x≤a , x≤y , x≤Lxs
- -- (x ≤ y) × (x ≤L sinsert a xs)
  ... | inj₂ y≤a = x≤y , lemma₂ a x xs x≤a x≤Lxs
 
 InsertionSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
