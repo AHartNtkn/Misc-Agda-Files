@@ -5,7 +5,6 @@ open import Relation.Binary
 open import Function
 open import Data.Product
 open import Data.Sum
-open import Data.Unit hiding (total; _≤_; _≤?_)
 open import Data.Nat
 open import Relation.Binary.PropositionalEquality
 open import Data.List
