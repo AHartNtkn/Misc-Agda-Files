@@ -15,7 +15,7 @@ open import Data.List
 mutual
  data SortedList (TO : TotalOrder _ lzero _) : Set where
   []  : SortedList TO
-  cons : ∀ a → (ls : SortedList TO) → a ≤L ls → SortedList TO
+  cons : ∀ a (ls : SortedList TO) → a ≤L ls → SortedList TO
 
  data _≤L_ {TO} (a : TotalOrder.Carrier TO) : SortedList TO → Set where
   tt : a ≤L []
@@ -31,7 +31,7 @@ ForgetSorting : ∀ {TO} → SortedList TO → List $ TotalOrder.Carrier TO
 ForgetSorting [] = []
 ForgetSorting (cons a s x) = a ∷ ForgetSorting s
 
-lemma₁ : ∀ {TO} a x → (xs : SortedList TO) → TotalOrder._≤_ TO a x → x ≤L xs → a ≤L xs
+lemma₁ : ∀ {TO} a x (xs : SortedList TO) → TotalOrder._≤_ TO a x → x ≤L xs → a ≤L xs
 lemma₁ _ _ [] _ _ = tt 
 lemma₁ {TO} a x (cons y xs y≤Lxs) a≤x (x≤y , x≤Lxs) = TotalOrder.trans TO a≤x x≤y , lemma₁ a x xs a≤x x≤Lxs
 
@@ -60,7 +60,7 @@ iSort {TO} = ForgetSorting {TO} ∘ InsertionSort
 
 
 -- ========= Merge Sort Implementation ========
-lemma₃ : ∀ {TO} a b → (xs : SortedList TO) → (TotalOrder._≤_ TO a b) → (p : b ≤L xs) → a ≤L (cons b xs p)
+lemma₃ : ∀ {TO} a b (xs : SortedList TO) → (TotalOrder._≤_ TO a b) → ∀ p → a ≤L (cons b xs p)
 lemma₃ a b xs p1 p2 = p1 , lemma₁ a b xs p1 p2
 
 mutual
@@ -72,7 +72,7 @@ mutual
  ... | inj₁ a≤b = cons a (merge l1 (cons b l2 y)) (lemmaₘ a l1 (cons b l2 y) x (lemma₃ a b l2 a≤b y))
  ... | inj₂ b≤a = cons b (merge (cons a l1 x) l2) (lemmaₘ b (cons a l1 x) l2 (lemma₃ b a l1 b≤a x) y)
 
- lemmaₘ : ∀ {TO} a → (l1 l2 : SortedList TO) → a ≤L l1 → a ≤L l2 → a ≤L merge l1 l2
+ lemmaₘ : ∀ {TO} a (l1 l2 : SortedList TO) → a ≤L l1 → a ≤L l2 → a ≤L merge l1 l2
  lemmaₘ a [] [] _ _ = tt
  lemmaₘ a [] (cons a₁ l2 x) _ p2 = p2
  lemmaₘ a (cons a₁ l1 x) [] p1 _ = p1
