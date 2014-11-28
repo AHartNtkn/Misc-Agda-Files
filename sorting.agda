@@ -134,14 +134,27 @@ n ^ suc m = n * n ^ m
 ⌈ℕLog₂ : ℕ → ℕ
 ⌈ℕLog₂ 0 = 0
 ⌈ℕLog₂ 1 = 0
+⌈ℕLog₂ (suc (suc n)) = (suc (suc n)) ∸ lg (suc (suc n)) (suc (suc n)) where
+ lg : ℕ → ℕ → ℕ
+ lg 0 m = 0
+ lg (suc n) m with ⌈ m /2⌉
+ ... | 0 = 0
+ ... | 1 = n
+ ... | suc (suc m') = lg n $ suc (suc m')
+
+{- Slower, old implementation
+⌈ℕLog₂ : ℕ → ℕ
+⌈ℕLog₂ 0 = 0
+⌈ℕLog₂ 1 = 0
 ⌈ℕLog₂ (suc (suc n)) = suc $ preLog (suc n) ⌈ (suc n) /2⌉ where
  preLog : ℕ → ℕ → ℕ
  preLog m 0 = 0
  preLog m (suc n) with (2 ^ (suc n)) ≤? m
  ... | yes p = suc n
  ... | no ¬p = preLog m n
+-}
 
--- A faster? version of ceiling log base 2, but it doesn't pass the termination checker.
+{- A faster? version of ceiling log base 2, but it doesn't pass the termination checker.
 {-# NON_TERMINATING #-}
 ⌈ℕLog₂' : ℕ → ℕ
 ⌈ℕLog₂' 0 = 0
@@ -152,6 +165,7 @@ n ^ suc m = n * n ^ m
  ... | 0 = 0
  ... | 1 = suc n
  ... | suc (suc m') = lg (suc n) $ suc (suc m')
+-}
 
 termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
 termPreMerge [] = []
@@ -204,4 +218,4 @@ To≤ (suc x) (suc y) with To≤ x y
   total = To≤ } }
 
 SomeNats : List ℕ
-SomeNats = 8 ∷ 4 ∷ 5 ∷ 1 ∷ 3 ∷ 10 ∷ 9 ∷ 2 ∷ 6 ∷ 7 ∷ []
+SomeNats = 8 ∷ 4 ∷ 5 ∷ 1 ∷ 3 ∷ 10 ∷ 9 ∷ 2 ∷ 6 ∷ 7 ∷ 12 ∷ 16 ∷ 11 ∷ 17 ∷ 13 ∷ 15 ∷ 14 ∷ []
