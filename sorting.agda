@@ -110,8 +110,8 @@ preMergeSort (x ∷ y ∷ l) = preMergeSort ((merge x y) ∷ preMergeSort l)
 
 {-
 Note: It takes exactly Ceiling[Log[2 , 2 * n]] = 1 + Ceiling[Log[2 , n]] recursions to sort a list of length n.
-This is the same as a function b, such that
 
+This is the same as a function b, such that;
 b[1] = 1
 b[n] = b[n - Floor[n / 2]] + 1
 -}
