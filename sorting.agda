@@ -130,7 +130,7 @@ mSorta {TO} = ForgetSorting {TO} ∘ mergeSortAlt
 ⌈ℕLog₂ : ℕ → ℕ
 ⌈ℕLog₂ 0 = 0
 ⌈ℕLog₂ 1 = 0
-⌈ℕLog₂ (suc (suc n)) = (suc (suc n)) ∸ lg (suc (suc n)) (suc (suc n)) where
+⌈ℕLog₂ (suc (suc n)) = (suc n) ∸ lg (suc n) (suc (suc n)) where
  lg : ℕ → ℕ → ℕ
  lg 0 m = 0
  lg (suc n) m with ⌈ m /2⌉
