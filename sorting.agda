@@ -139,9 +139,11 @@ n ^ suc m = n * n ^ m
 ... | yes p = suc n
 ... | no ¬p = ⌈ℕ₂Log' m n
 
+-- Log base 2, taken to the ceiling.
 ⌈ℕ₂Log : ℕ → ℕ
 ⌈ℕ₂Log 0 = 0
-⌈ℕ₂Log (suc n) = ⌈ℕ₂Log' n ⌈ n /2⌉ + 2
+⌈ℕ₂Log 1 = 0
+⌈ℕ₂Log (suc (suc n)) = ⌈ℕ₂Log' (suc n) ⌈ (suc n) /2⌉
 
 termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
 termPreMerge [] = []
@@ -149,7 +151,7 @@ termPreMerge (x ∷ []) = x ∷ []
 termPreMerge (x ∷ y ∷ l) = ((merge x y) ∷ termPreMerge l)
 
 termMergeSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (⌈ℕ₂Log $ length l)
+termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (suc $ ⌈ℕ₂Log $ length l)
 ... | [] = []
 ... | x ∷ _ = x
 
