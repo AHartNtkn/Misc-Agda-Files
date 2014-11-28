@@ -103,6 +103,8 @@ preMergeSort [] = []
 preMergeSort (x ∷ []) = x ∷ []
 preMergeSort (x ∷ y ∷ l) = preMergeSort ((merge x y) ∷ preMergeSort l)
 
+-- Note: It takes exactly Ceiling[Log[2 , 2 * n]] recursions to sort a list of length n.
+
 mergeSortAlt : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
 mergeSortAlt l with preMergeSort (mergePrep l)
 ... | [] = []
@@ -111,7 +113,6 @@ mergeSortAlt l with preMergeSort (mergePrep l)
 -- to test, run: mSorta {ℕTO} SomeNats
 mSorta : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
 mSorta {TO} = ForgetSorting {TO} ∘ mergeSortAlt
-
 
 
 -- ============ Natural Number Total order for testing ==========
