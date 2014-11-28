@@ -153,10 +153,6 @@ termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (⌈ℕ₂Log $ l
 ... | [] = []
 ... | x ∷ _ = x
 
---(Nest termPreMerge (mergePrep {TO} l) (⌈ℕ₂Log $ length l))
-
---take 1 (Nest termPreMerge (mergePrep l) (⌈ℕ₂Log $ length l))
-
 -- to test, run: mSort {ℕTO} SomeNats
 tSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
 tSort {TO} = ForgetSorting {TO} ∘ termMergeSort
