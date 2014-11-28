@@ -8,6 +8,11 @@ open import Data.Sum
 open import Data.Nat
 open import Relation.Binary.PropositionalEquality
 open import Data.List
+open import Relation.Nullary.Core
+
+Nest : ∀ {l} {A : Set l} → (A → A) → A → ℕ → A
+Nest f a 0 = a
+Nest f a (suc n) = Nest f (f a) n
 
 -- ============ SortedList definition and Insertion Sort implementation, modified from http://web.student.chalmers.se/groups/datx02-dtp/html/SortedList.html =============
 
@@ -105,7 +110,6 @@ preMergeSort (x ∷ y ∷ l) = preMergeSort ((merge x y) ∷ preMergeSort l)
 
 {-
 Note: It takes exactly Ceiling[Log[2 , 2 * n]] recursions to sort a list of length n.
-
 This is the same as a function b, such that
 b[1] = 1
 b[n] = b[n - Floor[n / 2]] + 1
@@ -120,6 +124,42 @@ mergeSortAlt l with preMergeSort (mergePrep l)
 -- to test, run: mSorta {ℕTO} SomeNats
 mSorta : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
 mSorta {TO} = ForgetSorting {TO} ∘ mergeSortAlt
+
+
+
+-- =========== Terminating Merge Sort ========
+infixl 8 _^_
+_^_ : ℕ → ℕ → ℕ
+n ^ zero = 1
+n ^ suc m = n * n ^ m
+
+⌈ℕ₂Log' : ℕ → ℕ → ℕ
+⌈ℕ₂Log' m 0 = 0
+⌈ℕ₂Log' m (suc n) with (2 ^ (suc n)) ≤? m
+... | yes p = suc n
+... | no ¬p = ⌈ℕ₂Log' m n
+
+⌈ℕ₂Log : ℕ → ℕ
+⌈ℕ₂Log 0 = 0
+⌈ℕ₂Log (suc n) = ⌈ℕ₂Log' n ⌈ n /2⌉ + 2
+
+termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
+termPreMerge [] = []
+termPreMerge (x ∷ []) = x ∷ []
+termPreMerge (x ∷ y ∷ l) = ((merge x y) ∷ termPreMerge l)
+
+termMergeSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
+termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (⌈ℕ₂Log $ length l)
+... | [] = []
+... | x ∷ _ = x
+
+--(Nest termPreMerge (mergePrep {TO} l) (⌈ℕ₂Log $ length l))
+
+--take 1 (Nest termPreMerge (mergePrep l) (⌈ℕ₂Log $ length l))
+
+-- to test, run: mSort {ℕTO} SomeNats
+tSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
+tSort {TO} = ForgetSorting {TO} ∘ termMergeSort
 
 
 -- ============ Natural Number Total order for testing ==========
@@ -158,4 +198,4 @@ To≤ (suc x) (suc y) with To≤ x y
   total = To≤ } }
 
 SomeNats : List ℕ
-SomeNats = 8 ∷ 4 ∷ 5 ∷ 1 ∷ 3 ∷ 9 ∷ 2 ∷ 6 ∷ 7 ∷ []
+SomeNats = 8 ∷ 4 ∷ 5 ∷ 1 ∷ 3 ∷ 10 ∷ 9 ∷ 2 ∷ 6 ∷ 7 ∷ []
