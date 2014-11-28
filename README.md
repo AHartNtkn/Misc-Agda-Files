@@ -5,6 +5,7 @@ These are an assortment of functions and programs made by Anthony Hart in the pr
 (http://wiki.portal.chalmers.se/agda/pmwiki.php).
 
 Currently, the directory has the following files;
+
 sorting.agda
 - Includes a general definition of Sorted Lists over Total Orders, and an implementation of insertion sort.
 - Includes three different implementations of Merge Sort, one of them passing the termination checker.
