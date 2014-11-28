@@ -144,7 +144,7 @@ n ^ suc m = n * n ^ m
 ⌈ℕ₂Log : ℕ → ℕ
 ⌈ℕ₂Log 0 = 0
 ⌈ℕ₂Log 1 = 0
-⌈ℕ₂Log (suc (suc n)) = ⌈ℕ₂Log' (suc n) ⌈ (suc n) /2⌉
+⌈ℕ₂Log (suc (suc n)) = suc $ ⌈ℕ₂Log' (suc n) ⌈ (suc n) /2⌉
 
 termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
 termPreMerge [] = []
