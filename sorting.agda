@@ -144,7 +144,9 @@ n ^ suc m = n * n ^ m
 -- A faster? version of ceiling log base 2, but it doesn't pass the termination checker.
 {-# NON_TERMINATING #-}
 ⌈ℕLog₂' : ℕ → ℕ
-⌈ℕLog₂' n = lg 0 n where
+⌈ℕLog₂' 0 = 0
+⌈ℕLog₂' 1 = 0
+⌈ℕLog₂' (suc (suc n)) = lg 0 (suc (suc n)) where
  lg : ℕ → ℕ → ℕ
  lg n m with ⌈ m /2⌉
  ... | 0 = 0
