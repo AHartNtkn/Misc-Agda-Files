@@ -109,10 +109,7 @@ preMergeSort (x ∷ []) = x ∷ []
 preMergeSort (x ∷ y ∷ l) = preMergeSort ((merge x y) ∷ preMergeSort l)
 
 {-
-Note: It takes exactly Ceiling[Log[2 , 2 * n]] = 1 + Ceiling[Log[2 , n]] recursions to sort a list of length n.
-This is the same as a function b, such that;
-b[1] = 1
-b[n] = b[n - Floor[n / 2]] + 1
+Note: It takes exactly Ceiling[Log[2 , n]] recursions to sort a list of length n.
 -}
 
 
@@ -150,7 +147,7 @@ termPreMerge (x ∷ []) = x ∷ []
 termPreMerge (x ∷ y ∷ l) = ((merge x y) ∷ termPreMerge l)
 
 termMergeSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (suc $ ⌈ℕLog₂ $ length l)
+termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (⌈ℕLog₂ $ length l)
 ... | [] = []
 ... | x ∷ _ = x
 
