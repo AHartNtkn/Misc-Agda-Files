@@ -141,6 +141,16 @@ n ^ suc m = n * n ^ m
  ... | yes p = suc n
  ... | no ¬p = preLog m n
 
+-- A faster? version of ceiling log base 2, but it doesn't pass the termination checker.
+{-# NON_TERMINATING #-}
+⌈ℕLog₂' : ℕ → ℕ
+⌈ℕLog₂' n = lg 0 n where
+ lg : ℕ → ℕ → ℕ
+ lg n m with ⌈ m /2⌉
+ ... | 0 = 0
+ ... | 1 = suc n
+ ... | suc (suc m') = lg (suc n) $ suc (suc m')
+
 termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
 termPreMerge [] = []
 termPreMerge (x ∷ []) = x ∷ []
