@@ -25,6 +25,21 @@ data LambdaTerm : Set where
  _·_ : LambdaTerm → LambdaTerm → LambdaTerm
 
 -- A single step in lambda calculus evaluation
+λSimp : LambdaTerm → LambdaTerm
+λSimp (λₜ x x₁) = λₜ x (λSimp x₁)
+λSimp (vₜ x) = vₜ x
+λSimp (λₜ x (λₜ y e₂) · e₁) with x ≟ y
+... | yes p = λₜ x (λSimp e₂)
+... | no ¬p = λₜ y (λSimp ((λₜ x e₂) · e₁))
+λSimp (λₜ x (vₜ y) · e) with x ≟ y
+... | yes p = λSimp e
+... | no ¬p = vₜ y
+λSimp (λₜ x (e₂ · e₃) · e₁) =
+ (λSimp ((λₜ x e₂) · e₁) · λSimp ((λₜ x e₃) · e₁))
+λSimp (vₜ x · x₁) = (vₜ x · λSimp x₁)
+λSimp ((x · x₁) · x₂) = (λSimp (x · x₁) · λSimp x₂)
+
+{- Non-terminating version of λSimp. Makes λEV faster?
 {-# NON_TERMINATING #-}
 λSimp : LambdaTerm → LambdaTerm
 λSimp (λₜ x x₁) = λₜ x (λSimp x₁)
@@ -37,21 +52,6 @@ data LambdaTerm : Set where
 ... | no ¬p = vₜ y
 λSimp (λₜ x (e₂ · e₃) · e₁) =
  (λSimp (λSimp ((λₜ x e₂) · e₁)) · λSimp ((λₜ x e₃) · e₁))
-λSimp (vₜ x · x₁) = (vₜ x · λSimp x₁)
-λSimp ((x · x₁) · x₂) = (λSimp (x · x₁) · λSimp x₂)
-
-{- Terminating version of λSimp. Makes λEV slower?
-λSimp : LambdaTerm → LambdaTerm
-λSimp (λₜ x x₁) = λₜ x (λSimp x₁)
-λSimp (vₜ x) = vₜ x
-λSimp (λₜ x (λₜ y e₂) · e₁) with x ≟ y
-... | yes p = λₜ x (λSimp e₂)
-... | no ¬p = λₜ y (λSimp ((λₜ x e₂) · e₁))
-λSimp (λₜ x (vₜ y) · e) with x ≟ y
-... | yes p = λSimp e
-... | no ¬p = vₜ y
-λSimp (λₜ x (e₂ · e₃) · e₁) =
- (λSimp ((λₜ x e₂) · e₁) · λSimp ((λₜ x e₃) · e₁))
 λSimp (vₜ x · x₁) = (vₜ x · λSimp x₁)
 λSimp ((x · x₁) · x₂) = (λSimp (x · x₁) · λSimp x₂)
 -}
