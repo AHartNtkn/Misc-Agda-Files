@@ -97,6 +97,7 @@ mSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier 
 mSort {TO} = ForgetSorting {TO} ∘ mergeSort
 
 
+
 -- ============ Alternative Merge Sort =============
 mergePrep : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ SortedList TO
 mergePrep [] = []
@@ -127,10 +128,10 @@ mSorta {TO} = ForgetSorting {TO} ∘ mergeSortAlt
 -- =========== Terminating Merge Sort ========
 
 -- Log base 2, taken to the ceiling.
-⌈ℕLog₂ : ℕ → ℕ
-⌈ℕLog₂ 0 = 0
-⌈ℕLog₂ 1 = 0
-⌈ℕLog₂ (suc (suc n)) = (suc n) ∸ lg (suc n) (suc (suc n)) where
+⌈ℕLog₂_⌉ : ℕ → ℕ
+⌈ℕLog₂ 0 ⌉ = 0
+⌈ℕLog₂ 1 ⌉ = 0
+⌈ℕLog₂ (suc (suc n)) ⌉ = (suc n) ∸ lg (suc n) (suc (suc n)) where
  lg : ℕ → ℕ → ℕ
  lg 0 m = 0
  lg (suc n) m with ⌈ m /2⌉
@@ -144,13 +145,14 @@ termPreMerge (x ∷ []) = x ∷ []
 termPreMerge (x ∷ y ∷ l) = ((merge x y) ∷ termPreMerge l)
 
 termMergeSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) (⌈ℕLog₂ $ length l)
+termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) ⌈ℕLog₂ length l ⌉
 ... | [] = []
 ... | x ∷ _ = x
 
 -- to test, run: mSort {ℕTO} SomeNats
 tSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
 tSort {TO} = ForgetSorting {TO} ∘ termMergeSort
+
 
 
 -- ============ Natural Number Total order for testing ==========
@@ -190,3 +192,5 @@ To≤ (suc x) (suc y) with To≤ x y
 
 SomeNats : List ℕ
 SomeNats = 8 ∷ 4 ∷ 5 ∷ 1 ∷ 3 ∷ 10 ∷ 9 ∷ 2 ∷ 6 ∷ 7 ∷ 12 ∷ 16 ∷ 11 ∷ 17 ∷ 13 ∷ 15 ∷ 14 ∷ []
+
+
