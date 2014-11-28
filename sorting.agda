@@ -133,17 +133,16 @@ _^_ : ℕ → ℕ → ℕ
 n ^ zero = 1
 n ^ suc m = n * n ^ m
 
-⌈ℕLog₂' : ℕ → ℕ → ℕ
-⌈ℕLog₂' m 0 = 0
-⌈ℕLog₂' m (suc n) with (2 ^ (suc n)) ≤? m
-... | yes p = suc n
-... | no ¬p = ⌈ℕLog₂' m n
-
 -- Log base 2, taken to the ceiling.
 ⌈ℕLog₂ : ℕ → ℕ
 ⌈ℕLog₂ 0 = 0
 ⌈ℕLog₂ 1 = 0
-⌈ℕLog₂ (suc (suc n)) = suc $ ⌈ℕLog₂' (suc n) ⌈ (suc n) /2⌉
+⌈ℕLog₂ (suc (suc n)) = suc $ preLog (suc n) ⌈ (suc n) /2⌉ where
+ preLog : ℕ → ℕ → ℕ
+ preLog m 0 = 0
+ preLog m (suc n) with (2 ^ (suc n)) ≤? m
+ ... | yes p = suc n
+ ... | no ¬p = preLog m n
 
 termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
 termPreMerge [] = []
