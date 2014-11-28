@@ -91,7 +91,7 @@ t · t₁ λ≟ .t · .t₁ | yes refl | yes refl = yes refl
 ... | no ¬p | yes _ = no $ ¬p ∘ proj₁ ∘ λlem3
 ... | no ¬p | no  _ = no $ ¬p ∘ proj₁ ∘ λlem3
 
--- Keep evaluating as long as λEV is making changes
+-- Keep evaluating as long as λSimp is making changes
 {-# NON_TERMINATING #-}
 λEV : LambdaTerm → LambdaTerm
 λEV l with λSimp l λ≟ l
