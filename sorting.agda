@@ -125,10 +125,6 @@ mSorta {TO} = ForgetSorting {TO} ∘ mergeSortAlt
 
 
 -- =========== Terminating Merge Sort ========
-infixl 8 _^_
-_^_ : ℕ → ℕ → ℕ
-n ^ zero = 1
-n ^ suc m = n * n ^ m
 
 -- Log base 2, taken to the ceiling.
 ⌈ℕLog₂ : ℕ → ℕ
@@ -141,31 +137,6 @@ n ^ suc m = n * n ^ m
  ... | 0 = 0
  ... | 1 = n
  ... | suc (suc m') = lg n $ suc (suc m')
-
-{- Slower, old implementation
-⌈ℕLog₂ : ℕ → ℕ
-⌈ℕLog₂ 0 = 0
-⌈ℕLog₂ 1 = 0
-⌈ℕLog₂ (suc (suc n)) = suc $ preLog (suc n) ⌈ (suc n) /2⌉ where
- preLog : ℕ → ℕ → ℕ
- preLog m 0 = 0
- preLog m (suc n) with (2 ^ (suc n)) ≤? m
- ... | yes p = suc n
- ... | no ¬p = preLog m n
--}
-
-{- A faster? version of ceiling log base 2, but it doesn't pass the termination checker.
-{-# NON_TERMINATING #-}
-⌈ℕLog₂' : ℕ → ℕ
-⌈ℕLog₂' 0 = 0
-⌈ℕLog₂' 1 = 0
-⌈ℕLog₂' (suc (suc n)) = lg 0 (suc (suc n)) where
- lg : ℕ → ℕ → ℕ
- lg n m with ⌈ m /2⌉
- ... | 0 = 0
- ... | 1 = suc n
- ... | suc (suc m') = lg (suc n) $ suc (suc m')
--}
 
 termPreMerge : ∀ {TO} → List $ SortedList TO → List $ SortedList TO
 termPreMerge [] = []
