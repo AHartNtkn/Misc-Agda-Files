@@ -362,8 +362,8 @@ pr (1S b) = "1" s++ pr b
 String→Binary : String → Binary
 String→Binary str with toList str
 ... | []      = eb
-... | '0' ∷ r = 0S (String→Binary $ fromList r)
-... | '1' ∷ r = 1S (String→Binary $ fromList r)
+... | '0' ∷ r = 0S $ String→Binary $ fromList r
+... | '1' ∷ r = 1S $ String→Binary $ fromList r
 ... | x   ∷ r = eb
 
 BLCInterpreter : String → String
