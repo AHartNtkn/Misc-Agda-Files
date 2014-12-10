@@ -361,10 +361,10 @@ pr (1S b) = "1" s++ pr b
 {-# NON_TERMINATING #-}
 String→Binary : String → Binary
 String→Binary str with toList str
-String→Binary str | [] = eb
-String→Binary str | '0' ∷ r = 0S (String→Binary $ fromList r)
-String→Binary str | '1' ∷ r = 1S (String→Binary $ fromList r)
-String→Binary str | x ∷ r = eb
+... | []      = eb
+... | '0' ∷ r = 0S (String→Binary $ fromList r)
+... | '1' ∷ r = 1S (String→Binary $ fromList r)
+... | x   ∷ r = eb
 
 BLCInterpreter : String → String
 BLCInterpreter = pr ∘ BLCCompiler ∘ String→Binary
