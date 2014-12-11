@@ -91,7 +91,7 @@ t · t₁ λ≟ .t · .t₁ | yes refl | yes refl = yes refl
 ... | no ¬p | yes _ = no $ ¬p ∘ proj₁ ∘ λlem3
 ... | no ¬p | no  _ = no $ ¬p ∘ proj₁ ∘ λlem3
 
--- Keep evaluating as long as λSimp is making changes
+-- Keep evaluating as long as λEV is making changes
 {-# NON_TERMINATING #-}
 λEV : LambdaTerm → LambdaTerm
 λEV l with λSimp l λ≟ l
@@ -104,19 +104,16 @@ data SK : Set where
  s : SK
  _·_ : SK → SK → SK
 
-{-# NON_TERMINATING #-}
 SKSimp : SK → SK
 SKSimp k = k
 SKSimp s = s
 SKSimp (k · x) = k · SKSimp x
 SKSimp (s · x) = s · SKSimp x
 SKSimp ((k · x) · y) = SKSimp x
-SKSimp ((s · x) · y) = ((s · SKSimp x) · SKSimp y)
-SKSimp (((k · x) · y) · z) = SKSimp(SKSimp x · z)
-SKSimp (((s · x) · y) · z) =
- SKSimp(SKSimp(SKSimp x · z) · (y · z))
-SKSimp ((((x · y) · z) · w) · v) =
- SKSimp(SKSimp(SKSimp(SKSimp(SKSimp(SKSimp x · y) · z) · w) · v))
+SKSimp ((s · x) · y) = (s · SKSimp x) · SKSimp y
+SKSimp (((k · x) · y) · z) = SKSimp x · SKSimp z
+SKSimp (((s · x) · y) · z) = SKSimp (x · z) · SKSimp (y · z)
+SKSimp ((((x · y) · z) · w) · v) = SKSimp (((x · y) · z) · w) · SKSimp v
 
 SKid : SK
 SKid = (s · k) · k
@@ -124,6 +121,31 @@ SKid = (s · k) · k
 SKTest : SK
 SKTest = (((((((s · k) · k) · k) · k) · k) · s) · k) · k
 
+-- ============= Martin Lof Equality is decidable over lambda terms ========
+SKlem : {a b x y : SK} → _≡_ {A = SK} (a · x) (b · y) → a ≡ b × x ≡ y
+SKlem refl = refl , refl
+
+_SK≟_ : Decidable {A = SK} _≡_
+k SK≟ k = yes refl
+k SK≟ s = no (λ ())
+k SK≟ b · b₁ = no (λ ())
+s SK≟ k = no (λ ())
+s SK≟ s = yes refl
+s SK≟ b · b₁ = no (λ ())
+a · a₁ SK≟ k = no (λ ())
+a · a₁ SK≟ s = no (λ ())
+a · a₁ SK≟ b · b₁ with a SK≟ b | a₁ SK≟ b₁
+a · a₁ SK≟ .a · .a₁ | yes refl | yes refl = yes refl
+a · a₁ SK≟ b · b₁   | yes p    | no ¬p    = no $ ¬p ∘ proj₂ ∘ SKlem
+a · a₁ SK≟ b · b₁   | no ¬p    | yes p    = no $ ¬p ∘ proj₁ ∘ SKlem
+a · a₁ SK≟ b · b₁   | no ¬p    | no ¬p₁   = no $ ¬p ∘ proj₁ ∘ SKlem
+
+-- Keep evaluating as long as SKSimp is making changes
+{-# NON_TERMINATING #-}
+SKEV : SK → SK
+SKEV l with SKSimp l SK≟ l
+... | yes p = l
+... | no ¬p = SKEV $ SKSimp l
 
 -- =============== Translate a Lambda program into an SK program ========
 {-# NON_TERMINATING #-}
@@ -293,7 +315,7 @@ ne (0S b) = zero , b
 ne (1S b) = suc (proj₁ $ ne b) , (proj₂ $ ne b)
 
 -- Parse the operator structure
-{-# NON_TERMINATING #-}
+{-# TERMINATING #-}
 PreParse : Binary → List pseudodB
 PreParse eb = []
 PreParse (0S eb) = []
@@ -346,7 +368,7 @@ add : deBrujin
 add = λₜ (λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0)))))
 
 twoplustwo : deBrujin
-twoplustwo = (add · two) · two
+twoplustwo = add · two · two
 
 -- to test, run: NEV (add · (CN 3) · (CN 5))
 
@@ -354,7 +376,7 @@ twoplustwo = (add · two) · two
 -- ============= Stuff for IO ===========
 
 pr : Binary → String
-pr eb = ""
+pr eb     = ""
 pr (0S b) = "0" s++ pr b
 pr (1S b) = "1" s++ pr b
 
@@ -402,6 +424,97 @@ BLCInterpreter = pr ∘ BLCCompiler ∘ String→Binary
 
 -- ========= a messy deBrujin lambda calculus implementation ===========
 -- Seems to work, but I'm not sure. A typed version would be able to confirm.
+open import Data.List
+
+llookup : ℕ → ℕ → List deBrujin → deBrujin
+llookup n _ [] = vₜ n
+llookup n zero (x ∷ Γ) = vₜ n
+llookup n 1 (x ∷ Γ) = x
+llookup n (suc (suc m)) (x ∷ Γ) = llookup n (suc m) Γ
+
+ccEval : deBrujin → deBrujin
+ccEval = cEval 0 [] where
+ cEval : ℕ → List deBrujin → deBrujin → deBrujin
+ cEval n Γ (λₜ i) = λₜ (cEval (suc n) (vₜ n ∷ Γ) i)
+ cEval n [] (vₜ x) = vₜ x
+ cEval n Γ (vₜ m) = llookup m (suc m) Γ
+ cEval n Γ (λₜ i · e) = cEval (suc n) (e ∷ Γ) i
+ cEval n Γ (vₜ x · i) = cEval n Γ (vₜ x) · cEval n Γ i
+ cEval n Γ (i · i₁ · i₂) = cEval n Γ (i · i₁) · cEval n Γ i₂
+
+{- ccEval $ 
+λₜ (λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))) · λₜ (λₜ (vₜ 1 · vₜ 0))
+
+λₜ (λₜ (λₜ (λₜ (λₜ (vₜ 1 · vₜ 0)) · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))
+λₜ (λₜ (λₜ (λₜ (λₜ (vₜ 1 · vₜ 0)) · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))
+
+λₜ (λₜ (λₜ (λₜ (vₜ 1 · vₜ 0) · (vₜ 2 · vₜ 1 · vₜ 0))))
+λₜ (λₜ (λₜ (λₜ (vₜ 1 · vₜ 0) · (vₜ 2 · vₜ 1 · vₜ 0))))
+
+λₜ (λₜ (λₜ (vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))
+
+
+λₜ (λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))) · λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))
+· λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))
+
+λₜ (λₜ (λₜ (λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0))) · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0)))) ·
+· λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))
+
+λₜ (λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))) · λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))
+
+λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · vₜ 0))))) · λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))
+
+λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))))))
+
+λₜ (λₜ (λₜ (vₜ 3 · vₜ 1 · (vₜ 2 · vₜ 1 · λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))))))
+· λₜ (λₜ (vₜ 1 · (vₜ 1 · vₜ 0)))
+
+0
+[]
+λₜ (λₜ (vₜ 1 · vₜ 0) · (vₜ 2 · vₜ 1 · vₜ 0))
+
+1
+[]
+λₜ (vₜ 1 · vₜ 0) · (vₜ 2 · vₜ 1 · vₜ 0)
+
+2
+(vₜ 2 · vₜ 1 · vₜ 0) ∷ []
+vₜ 1 · vₜ 0
+
+2
+(vₜ 2 · vₜ 1 · vₜ 0) ∷ []
+vₜ 1 · vₜ 0
+
+
+0
+[]
+λₜ (vₜ 1) · (vₜ 34404)
+
+1
+(vₜ 34404) ∷ []
+vₜ 1
+
+1
+(vₜ 34404) ∷ []
+vₜ 1
+
+
+fromDB : deBrujin → LambdaTerm
+fromDB = cnvt 0 [] where
+ cnvt : ℕ → List LambdaTerm → deBrujin → LambdaTerm
+ cnvt n e (λₜ t) = λₜ n (cnvt (suc n) (vₜ n ∷ e) t)
+ cnvt n [] (vₜ x) = vₜ x
+ cnvt n (e₁ ∷ e) (vₜ 0) = e₁
+ cnvt n (_ ∷ e) (vₜ (suc x)) = cnvt n e (vₜ x)
+ cnvt n e (t · t₁) = cnvt n e t · cnvt n e t₁
+
+toDB : LambdaTerm → deBrujin
+toDB = cnvt 0 where
+ cnvt : ℕ → LambdaTerm → deBrujin
+ cnvt n (λₜ x t) = λₜ (cnvt (suc x) t)
+ cnvt n (vₜ x) = vₜ (n ∸ suc x)
+ cnvt n (t · t₁) = cnvt n t · cnvt n t₁
+-}
 
 RaiseUp : ℕ → deBrujin → deBrujin
 RaiseUp n (λₜ b) = λₜ (RaiseUp (suc n) b)
