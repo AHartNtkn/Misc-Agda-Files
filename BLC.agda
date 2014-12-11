@@ -121,7 +121,7 @@ SKid = (s · k) · k
 SKTest : SK
 SKTest = (((((((s · k) · k) · k) · k) · k) · s) · k) · k
 
--- ============= Martin Lof Equality is decidable over lambda terms ========
+-- ============= Martin Lof Equality is decidable over SK terms ========
 SKlem : {a b x y : SK} → _≡_ {A = SK} (a · x) (b · y) → a ≡ b × x ≡ y
 SKlem refl = refl , refl
 
