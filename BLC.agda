@@ -268,7 +268,7 @@ ex4 = λₜ (λₜ (λₜ (vₜ 1)) · (λₜ (vₜ 0 · vₜ 0)))
 
 
 -- ============= deBrujin implementation via translation to ordinary lambda terms ==========
--- These are modified from funcitons found here: http://homepages.cwi.nl/~tromp/cl/HOAS.lhs
+-- These are modified from functions found here: http://homepages.cwi.nl/~tromp/cl/HOAS.lhs
 
 fromDB : deBrujin → LambdaTerm
 fromDB = cnvt 0 [] where
