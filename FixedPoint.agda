@@ -17,6 +17,9 @@ record _↠_ (A B : Set) : Set where
 data NoFixpoint {A : Set} (f : A → A) : Set where
  nf : (∀ a → f a ≢ a) → NoFixpoint f
 
+data Fixpoint {A : Set} (f : A → A) : Set where
+ fp : (Σ[ a ∈ A ] f a ≡ a) → Fixpoint f
+
 --======== Lemmas for working with surjections, and in preparation for Cantor's theorem. Probably could be done better =======
 --A surjection contains a function
 canLem1 : {A B : Set} → (A ↠ B) → A → B
@@ -45,8 +48,8 @@ as the element which happens to produce g (there has to be at least one). We the
 by observing that the representation of g is the same diagnalization that we defined f to be. From there, the
 proof goes through straightforwardly.
 -}
-SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y))
-SetFx {T} {Y} α (nf noFix) sr = noFix (f (t₀ , t₀)) e3 where
+SetFp : {T Y : Set} → (T ↠ (T → Y)) → (α : Y → Y) → Fixpoint α
+SetFp {T} {Y} sr α = fp (f (t₀ , t₀) , e3) where
  f : T × T → Y
  f = canLem2 (canLem1 sr)
 
@@ -62,9 +65,20 @@ SetFx {T} {Y} α (nf noFix) sr = noFix (f (t₀ , t₀)) e3 where
  e3 : α (f (t₀ , t₀)) ≡ f (t₀ , t₀)
  e3 rewrite sym e2 = refl
 
+SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y))
+SetFx {T} {Y} α (nf noFix) sr = noFix (fp₁ po) (fp₂ po) where
+ po : Fixpoint α
+ po = SetFp sr α
+
+ fp₁ : ∀ {a} → Fixpoint a → Y
+ fp₁ (fp (p₁ , p₂)) = p₁
+
+ fp₂ : ∀ {a} → (p : Fixpoint a) → a (fp₁ p) ≡ fp₁ p
+ fp₂ (fp (p₁ , p₂)) = p₂
+
 --Cantor's Theorem. Here, the not function is used for its lack of fixed point.
 Cantor : ¬ (ℕ ↠ (ℕ → Bool))
-Cantor = SetFx not (nf helper) where
- helper : (a : Bool) → not a ≢ a
- helper true ()
- helper false ()
+Cantor = SetFx not (nf hlpr) where
+ hlpr : (a : Bool) → not a ≢ a
+ hlpr true  ()
+ hlpr false ()
