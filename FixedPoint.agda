@@ -21,10 +21,6 @@ data Fixpoint {A : Set} (f : A → A) : Set where
  fp : (Σ[ a ∈ A ] f a ≡ a) → Fixpoint f
 
 --======== Lemmas for working with surjections, and in preparation for Cantor's theorem. Probably could be done better =======
---A surjection contains a function
-canLem1 : {A B : Set} → (A ↠ B) → A → B
-canLem1 (sur to _) = to
-
 --Diagnalization
 canLem2 : {T S Y : Set} → (T → S → Y) → T × S → Y
 canLem2 f (p₁ , p₂) = f p₁ p₂
@@ -37,7 +33,7 @@ lem to from pr g t rewrite pr g = refl
  This is the first real step in the proof. For any surjection s : T ↠ (T → Y), and any function g : T → Y,
 one can use s to represent g, using the diagnalization from earlier.
 -}
-canLem : {T Y : Set} → (sr : T ↠ (T → Y)) → (g : T → Y) → Σ[ x ∈ T ] (∀ t → canLem2 (canLem1 sr) (x , t) ≡ g t)
+canLem : {T Y : Set} → (sr : T ↠ (T → Y)) → (g : T → Y) → Σ[ x ∈ T ] (∀ t → canLem2 (_↠_.to sr) (x , t) ≡ g t)
 canLem {T} {Y} (sur to (from , ff'x≡x)) g = from g , lem to from ff'x≡x g
 
 {-
@@ -51,7 +47,7 @@ proof goes through straightforwardly.
 SetFp : {T Y : Set} → (T ↠ (T → Y)) → (α : Y → Y) → Fixpoint α
 SetFp {T} {Y} sr α = fp (f (t₀ , t₀) , e3) where
  f : T × T → Y
- f = canLem2 (canLem1 sr)
+ f = canLem2 (_↠_.to sr)
 
  g : T → Y
  g x = α (f (x , x))
