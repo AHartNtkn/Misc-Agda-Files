@@ -14,10 +14,8 @@ record _↠_ (A B : Set) : Set where
   rightInv : Σ[ g ∈ (B → A) ] (∀ x → to (g x) ≡ x)
 
 -- The type of proofs that a function has no fixed point
-record NoFixpoint {A : Set} (f : A → A) : Set where
- constructor nf
- field
-  noFix : ∀ a → f a ≢ a
+data NoFixpoint {A : Set} (f : A → A) : Set where
+ nf : (∀ a → f a ≢ a) → NoFixpoint f
 
 --======== Lemmas for working with surjections, and in preparation for Cantor's theorem. Probably could be done better =======
 --A surjection contains a function
