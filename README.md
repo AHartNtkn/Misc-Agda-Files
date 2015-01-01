@@ -21,3 +21,8 @@ BLC.agda
 - Includes functions for translating back and forth between deBrujin terms and lambda terms
 - Includes an implementation of the Binary Lambda Calculus, the reason the file is called BLC
   (http://homepages.cwi.nl/~tromp/cl/LC.pdf)
+
+FixedPoint.agda
+- File created to formalize some of the results in http://arxiv.org/pdf/math/0305282v1.pdf
+- Contains a proof of Lawvere's fixed point theorem over types and functions (I hope to extend it to the full theorem at some point.)
+- Contains a proof of Cantor's Theorem as an instance.
