@@ -33,7 +33,7 @@ lem : {A B : Set} → (to : A → A → B) → (from : (A → B) → A) → (∀
 lem to from pr g t rewrite pr g = refl
 
 {-
- This is the first real step in the proof. For ant surjection s : T ↠ (T → Y), and any function g : T → Y,
+ This is the first real step in the proof. For any surjection s : T ↠ (T → Y), and any function g : T → Y,
 one can use s to represent g, using the diagnalization from earlier.
 -}
 canLem : {T Y : Set} → (sr : T ↠ (T → Y)) → (g : T → Y) → Σ[ x ∈ T ] (∀ t → canLem2 (canLem1 sr) (x , t) ≡ g t)
