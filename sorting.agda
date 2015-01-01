@@ -52,12 +52,12 @@ mutual
  ... | inj₁ a≤y = x≤a , x≤y , x≤Lxs
  ... | inj₂ y≤a = x≤y , lemma₂ a x xs x≤a x≤Lxs
 
-InsertionSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-InsertionSort = foldr sinsert []
+InsertionSort : ∀ TO → List $ TotalOrder.Carrier TO → SortedList TO
+InsertionSort TO = foldr sinsert []
 
--- To test, run: iSort {ℕTO} SomeNats
-iSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
-iSort {TO} = ForgetSorting {TO} ∘ InsertionSort
+-- To test, run: iSort ℕTO SomeNats
+iSort : ∀ TO → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
+iSort TO = ForgetSorting ∘ InsertionSort TO
 
 
 
@@ -86,15 +86,15 @@ splitList : ∀ {l} {A : Set l} → List A → List A × List A
 splitList l = take (⌊ length l /2⌋) l , drop (⌊ length l /2⌋) l
 
 {-# NON_TERMINATING #-}
-mergeSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-mergeSort [] = []
-mergeSort (x ∷ []) = cons x [] tt
-mergeSort (x ∷ y ∷ l) with splitList (x ∷ y ∷ l)
-... | l1 , l2 = merge (mergeSort l1) (mergeSort l2)
+mergeSort : ∀ TO → List $ TotalOrder.Carrier TO → SortedList TO
+mergeSort TO [] = []
+mergeSort TO (x ∷ []) = cons x [] tt
+mergeSort TO (x ∷ y ∷ l) with splitList (x ∷ y ∷ l)
+... | l1 , l2 = merge (mergeSort TO l1) (mergeSort TO l2)
 
--- To test, run: mSort {ℕTO} SomeNats
-mSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
-mSort {TO} = ForgetSorting {TO} ∘ mergeSort
+-- To test, run: mSort ℕTO SomeNats
+mSort : ∀ TO → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
+mSort TO = ForgetSorting ∘ mergeSort TO
 
 
 
@@ -114,14 +114,14 @@ Note: It takes exactly Ceiling[Log[2 , n]] recursions to sort a list of length n
 -}
 
 
-mergeSortAlt : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-mergeSortAlt l with preMergeSort (mergePrep l)
+mergeSortAlt : ∀ TO → List $ TotalOrder.Carrier TO → SortedList TO
+mergeSortAlt TO l with preMergeSort (mergePrep l)
 ... | [] = []
 ... | x ∷ r = x
 
--- to test, run: mSorta {ℕTO} SomeNats
-mSorta : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
-mSorta {TO} = ForgetSorting {TO} ∘ mergeSortAlt
+-- to test, run: mSorta ℕTO SomeNats
+mSorta : ∀ TO → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
+mSorta TO = ForgetSorting ∘ mergeSortAlt TO
 
 
 
@@ -144,14 +144,14 @@ termPreMerge [] = []
 termPreMerge (x ∷ []) = x ∷ []
 termPreMerge (x ∷ y ∷ l) = ((merge x y) ∷ termPreMerge l)
 
-termMergeSort : ∀ {TO} → List $ TotalOrder.Carrier TO → SortedList TO
-termMergeSort {TO} l with Nest termPreMerge (mergePrep {TO} l) ⌈ℕLog₂ length l ⌉
+termMergeSort : ∀ TO → List $ TotalOrder.Carrier TO → SortedList TO
+termMergeSort TO l with Nest termPreMerge (mergePrep l) ⌈ℕLog₂ length l ⌉
 ... | [] = []
 ... | x ∷ _ = x
 
--- to test, run: mSort {ℕTO} SomeNats
-tSort : ∀ {TO} → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
-tSort {TO} = ForgetSorting {TO} ∘ termMergeSort
+-- to test, run: mSort ℕTO SomeNats
+tSort : ∀ TO → List $ TotalOrder.Carrier TO → List $ TotalOrder.Carrier TO
+tSort TO = ForgetSorting ∘ termMergeSort TO
 
 
 
@@ -192,5 +192,3 @@ To≤ (suc x) (suc y) with To≤ x y
 
 SomeNats : List ℕ
 SomeNats = 8 ∷ 4 ∷ 5 ∷ 1 ∷ 3 ∷ 10 ∷ 9 ∷ 2 ∷ 6 ∷ 7 ∷ 12 ∷ 16 ∷ 11 ∷ 17 ∷ 13 ∷ 15 ∷ 14 ∷ []
-
-
