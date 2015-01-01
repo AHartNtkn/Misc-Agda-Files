@@ -35,7 +35,7 @@ lem to from pr g t rewrite pr g = refl
 one can use s to represent g, using the diagnalization from earlier.
 -}
 canLem : {T Y : Set} → (sr : T ↠ (T → Y)) → (g : T → Y) → Σ[ x ∈ T ] (∀ t → canLem2 (canLem1 sr) (x , t) ≡ g t)
-canLem {T} {Y} (sur to (from , ff'x≡x)) g rewrite ff'x≡x g = from g , lem to from ff'x≡x g
+canLem {T} {Y} (sur to (from , ff'x≡x)) g = from g , lem to from ff'x≡x g
 
 {-
  A generalization of cantor's proof over arbitrary types. We assume that α is a function with no fixed point,
