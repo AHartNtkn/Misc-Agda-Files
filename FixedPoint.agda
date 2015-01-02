@@ -18,7 +18,7 @@ data NoFixpoint {A : Set} (f : A → A) : Set where
  nf : (∀ a → f a ≢ a) → NoFixpoint f
 
 data Fixpoint {A : Set} (f : A → A) : Set where
- fp : (Σ[ a ∈ A ] f a ≡ a) → Fixpoint f
+ fp : Σ[ a ∈ A ] f a ≡ a → Fixpoint f
 
 --======== Lemmas for working with surjections, and in preparation for Cantor's theorem. Probably could be done better =======
 --Diagnalization
