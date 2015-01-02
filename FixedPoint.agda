@@ -62,7 +62,7 @@ SetFp {T} {Y} sr α = fp (f (t₀ , t₀) , e3) where
  e3 rewrite sym e2 = refl
 
 SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y))
-SetFx {T} {Y} α (nf noFix) sr with SetFp sr α
+SetFx α (nf noFix) sr with SetFp sr α
 ... | fp (p₁ , p₂) = noFix p₁ p₂
 
 --Cantor's Theorem. Here, the not function is used for its lack of fixed point.
