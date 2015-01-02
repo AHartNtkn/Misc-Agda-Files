@@ -62,15 +62,8 @@ SetFp {T} {Y} sr α = fp (f (t₀ , t₀) , e3) where
  e3 rewrite sym e2 = refl
 
 SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y))
-SetFx {T} {Y} α (nf noFix) sr = noFix (fp₁ po) (fp₂ po) where
- po : Fixpoint α
- po = SetFp sr α
-
- fp₁ : ∀ {a} → Fixpoint a → Y
- fp₁ (fp (p₁ , p₂)) = p₁
-
- fp₂ : ∀ {a} → (p : Fixpoint a) → a (fp₁ p) ≡ fp₁ p
- fp₂ (fp (p₁ , p₂)) = p₂
+SetFx {T} {Y} α (nf noFix) sr with SetFp sr α
+... | fp (p₁ , p₂) = noFix p₁ p₂
 
 --Cantor's Theorem. Here, the not function is used for its lack of fixed point.
 Cantor : ¬ (ℕ ↠ (ℕ → Bool))
