@@ -26,13 +26,6 @@ lem : {A B : Set} → (to : A → A → B) → (from : (A → B) → A) → (∀
 lem to from pr g t rewrite pr g = refl
 
 {-
- This is the first real step in the proof. For any surjection s : T ↠ (T → Y), and any function g : T → Y,
-one can use s to represent g, using the diagnalization from earlier.
--}
-canLem : {T Y : Set} → (sr : T ↠ (T → Y)) → (g : T → Y) → Σ[ x ∈ T ] (∀ t → _↠_.to sr x t ≡ g t)
-canLem {T} {Y} (sur to (from , ff'x≡x)) g = from g , lem to from ff'x≡x g
-
-{-
  A generalization of cantor's proof over arbitrary types. We assume that α is a function with no fixed point,
 and then assume a surjection. From there, we define f as the diagnanalization of our surjection. We then define our
 counter-example function g in terms of α and f. We then extract the representation of g using canLem. We define t₀
@@ -41,18 +34,18 @@ by observing that the representation of g is the same diagnalization that we def
 proof goes through straightforwardly.
 -}
 SetFp : {T Y : Set} → (T ↠ (T → Y)) → (α : Y → Y) → Fixpoint α
-SetFp {T} {Y} sr α = fp (f t₀ t₀ , e3) where
+SetFp {T} {Y} (sur to (from , ff'x≡x)) α = fp (f t₀ t₀ , e3) where
  f : T → T → Y
- f = _↠_.to sr
+ f = to
 
  g : T → Y
  g x = α (f x x)
 
  t₀ : T
- t₀ = proj₁ $ canLem sr g
+ t₀ = from g
 
  e2 : f t₀ t₀ ≡ g t₀
- e2 = (proj₂ $ canLem sr g) t₀
+ e2 = lem to from ff'x≡x g t₀
 
  e3 : α (f t₀ t₀) ≡ f t₀ t₀
  e3 rewrite sym e2 = refl
