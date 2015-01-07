@@ -61,9 +61,49 @@ SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y)
 SetFx α (nf noFix) sr with SetFp sr α
 ... | fp (p₁ , p₂) = noFix p₁ p₂
 
+postulate
+ funex : {A B : Set} → {f g : A → B} → (∀ a → f a ≡ g a) → f ≡ g
+
+{-
+ These functions describe what the significance of surjections are. If a surjection exists, then there exists
+a function, g, which can be used to encode an arbitrary function using elements of the input type, and
+vice versa.
+-}
+Encode1 : {A B : Set} → Σ[ g ∈ (A → A → B) ] ((f : A → B) → Σ[ n ∈ A ] (∀ m → g n m ≡ f m)) → (A ↠ (A → B))
+Encode1 {A} {B} (g , encode) = sur g ((λ z → proj₁ (encode z)) , hlprlem) where
+ hlprlem : (x : A → B) → g (proj₁ (encode x)) ≡ x
+ hlprlem x with encode x
+ ... | _ , ∀m:gnm≡fm rewrite funex ∀m:gnm≡fm = refl
+
+Encode2 : {A B : Set} → (A ↠ (A → B)) → Σ[ g ∈ (A → A → B) ] ((f : A → B) → Σ[ n ∈ A ] (∀ m → g n m ≡ f m))
+Encode2 {A} {B} (sur to (from , p₂)) = to , hlprlem where 
+ hlprlem : (f : A → B) → Σ[ n ∈ A ] ((m : A) → to n m ≡ f m)
+ hlprlem f = from f , lem to from p₂ f
+
 --Cantor's Theorem. Here, the not function is used for its lack of fixed point.
 Cantor : ¬ (ℕ ↠ (ℕ → Bool))
 Cantor = SetFx not (nf hlpr) where
  hlpr : (a : Bool) → not a ≢ a
  hlpr true  ()
  hlpr false ()
+
+ChurchLem : ¬ (ℕ ↠ (ℕ → ℕ))
+ChurchLem = SetFx suc (nf hlpr) where
+ hlpr : (a : ℕ) → suc a ≢ a
+ hlpr _ ()
+
+{-
+ This is (partly) a proof that Church's Law (the Church-Turing thesis) is false. In the original notation;
+ ¬ ((f : ℕ → ℕ) → Σ[ n ∈ ℕ ] (n ⊩ f))
+
+ Where n ⊩ f means that n is the code for the function f, under some encoding scheme. Here, g (in the type
+signature) is a function which is assumed to encode all functions (ℕ → ℕ) using an ℕ. Turing machines are
+supposed to be a method to encode all computable functions using natural numbers. In ETT, all functions
+ℕ → ℕ are computable (this needs to be proved elsewhere). This theorem shows that there are computable
+functions which are not encodable, no matter what encoding scheme you choose.
+
+See here for more info;
+https://existentialtype.wordpress.com/2012/08/09/churchs-law/
+-}
+Church : ¬ (Σ[ g ∈ (ℕ → ℕ → ℕ) ] ((f : ℕ → ℕ) → Σ[ n ∈ ℕ ] (∀ m → g n m ≡ f m)))
+Church o = ChurchLem (Encode1 o)
