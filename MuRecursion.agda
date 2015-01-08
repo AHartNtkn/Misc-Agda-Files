@@ -3,7 +3,7 @@ open import Data.Vec
 
 -- =============== μ-recursive function ===============
 
-{- This is how to do it properly, but the Identity function is annoying to use
+{- This is how to do it properly, but the Identity function is annoying to use {- -}
 data μ-RF : ℕ → Set where
  C : ∀ {k} → ℕ → μ-RF k -- Constant function
  S : μ-RF 1 -- Successor function
