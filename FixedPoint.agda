@@ -21,7 +21,7 @@ data NoFixpoint {A : Set} (f : A → A) : Set where
 data Fixpoint {A : Set} (f : A → A) : Set where
  fp : Σ[ a ∈ A ] f a ≡ a → Fixpoint f
 
---======== Lemmas for working with surjections, and in preparation for Cantor's theorem. Probably could be done better =======
+--======== Cantor's theorem / Fixed Point Theorem =======
 --if f is a (higher-order) surjection and f' is the right inverse of f, then f (f' x) t = x t
 lem : {A B : Set} → (to : A → A → B) → (from : (A → B) → A) → (∀ a → to (from a) ≡ a) → ∀ g t → to (from g) t ≡ g t
 lem to from pr g t rewrite pr g = refl
