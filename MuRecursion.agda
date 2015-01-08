@@ -24,7 +24,7 @@ data μ-RF : ℕ → Set where
 μEval (μ f) args = Minimization f (0 ∷ args) where
  Minimization : ∀ {k} → μ-RF (suc k) → Vec ℕ (suc k) → ℕ
  Minimization f (x ∷ args) with μEval f (x ∷ args)
- ... | 0 = 0
+ ... | 0 = μEval f (x ∷ args)
  ... | suc _ = Minimization f (suc x ∷ args)
 
 -- Addition as a μ-recursive function. You can test this with;
@@ -55,7 +55,7 @@ data μ-RF : ℕ → Set where
 μEval (μ f) args = Minimization f (0 ∷ args) where
  Minimization : ∀ {k} → μ-RF (suc k) → Vec ℕ (suc k) → ℕ
  Minimization f (x ∷ args) with μEval f (x ∷ args)
- ... | 0 = 0
+ ... | 0 = μEval f (x ∷ args)
  ... | suc _ = Minimization f (suc x ∷ args)
 
 -- Addition as a μ-recursive function. You can test this with;
