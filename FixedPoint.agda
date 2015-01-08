@@ -54,24 +54,29 @@ SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y)
 SetFx α (nf noFix) sr with SetFp sr α
 ... | fp (p₁ , p₂) = noFix p₁ p₂
 
-postulate
- funex : {A B : Set} → {f g : A → B} → (∀ a → f a ≡ g a) → f ≡ g
-
 {-
  These functions describe what the significance of surjections are. If a surjection exists, then there exists
 a function, g, which can be used to encode an arbitrary function using elements of the input type, and
 vice versa.
 -}
-Encode1 : {A B : Set} → Σ[ g ∈ (A → A → B) ] ((f : A → B) → Σ[ n ∈ A ] (∀ m → g n m ≡ f m)) → (A ↠ (A → B))
+Encode1 : {A B : Set} → Σ[ g ∈ (A → B) ] ((f : B) → Σ[ n ∈ A ] (g n ≡ f)) → (A ↠ B)
 Encode1 {A} {B} (g , encode) = sur g ((λ z → proj₁ (encode z)) , hlprlem) where
- hlprlem : (x : A → B) → g (proj₁ (encode x)) ≡ x
+ hlprlem : (x : B) → g (proj₁ (encode x)) ≡ x
  hlprlem x with encode x
- ... | _ , ∀m:gnm≡fm rewrite funex ∀m:gnm≡fm = refl
+ ... | _ , ∀m:gnm≡fm = ∀m:gnm≡fm
 
-Encode2 : {A B : Set} → (A ↠ (A → B)) → Σ[ g ∈ (A → A → B) ] ((f : A → B) → Σ[ n ∈ A ] (∀ m → g n m ≡ f m))
+Encode2 : {A B : Set} → (A ↠ B) → Σ[ g ∈ (A → B) ] ((f : B) → Σ[ n ∈ A ] (g n ≡ f))
 Encode2 {A} {B} (sur to (from , p₂)) = to , hlprlem where 
- hlprlem : (f : A → B) → Σ[ n ∈ A ] ((m : A) → to n m ≡ f m)
- hlprlem f = from f , lem to from p₂ f
+ hlprlem : (f : B) → Σ[ n ∈ A ] (to n ≡ f)
+ hlprlem f = from f , p₂ f
+
+{-
+EN12 : ∀ {A B} → ∀ x →  Encode1 {A} {B} (Encode2 x) ≡ x
+EN12 (sur to (from , p₂)) = {!!}
+
+EN21 : ∀ {A B} → ∀ x →  Encode2 {A} {B} (Encode1 x) ≡ x
+EN21 (p₁ , p₂) = {!!}
+-}
 
 --Cantor's Theorem. Here, the not function is used for its lack of fixed point.
 Cantor : ¬ (ℕ ↠ (ℕ → Bool))
@@ -98,5 +103,6 @@ functions which are not encodable, no matter what encoding scheme you choose.
 See here for more info;
 https://existentialtype.wordpress.com/2012/08/09/churchs-law/
 -}
-Church : ¬ (Σ[ g ∈ (ℕ → ℕ → ℕ) ] ((f : ℕ → ℕ) → Σ[ n ∈ ℕ ] (∀ m → g n m ≡ f m)))
-Church o = ChurchLem (Encode1 o)
+Church : ¬ (Σ[ g ∈ (ℕ → ℕ → ℕ) ] ((f : ℕ → ℕ) → Σ[ n ∈ ℕ ] (g n ≡ f)))
+Church = ChurchLem ∘ Encode1
+
