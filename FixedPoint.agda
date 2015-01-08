@@ -94,9 +94,8 @@ ChurchLem = SetFx suc (nf hlpr) where
 
  Where n ⊩ f means that n is the code for the function f, under some encoding scheme. Here, g (in the type
 signature) is a function which is assumed to encode all functions (ℕ → ℕ) using an ℕ. Turing machines are
-supposed to be a method to encode all computable functions using natural numbers. In ETT, all functions
-ℕ → ℕ are computable (this needs to be proved elsewhere). This theorem shows that there are computable
-functions which are not encodable, no matter what encoding scheme you choose.
+supposed to be a method to encode all computable functions using natural numbers. In a certain sense, this is
+a proof that functions are, in general, not computable.
 
 See here for more info;
 https://existentialtype.wordpress.com/2012/08/09/churchs-law/
