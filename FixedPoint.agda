@@ -11,7 +11,8 @@ record _↠_ (A B : Set) : Set where
  constructor sur
  field
   to : A → B
-  rightInv : Σ[ g ∈ (B → A) ] (∀ x → to (g x) ≡ x)
+  from : B → A
+  rightInv : ∀ x → to (from x) ≡ x
 
 -- The type of proofs that a function has no fixed point
 data NoFixpoint {A : Set} (f : A → A) : Set where
@@ -34,7 +35,7 @@ by observing that the representation of g is the same diagnalization that we def
 proof goes through straightforwardly.
 -}
 SetFp : {T Y : Set} → (T ↠ (T → Y)) → (α : Y → Y) → Fixpoint α
-SetFp {T} {Y} (sur to (from , ff'x≡x)) α = fp (f t₀ t₀ , e3) where
+SetFp {T} {Y} (sur to from ff'x≡x) α = fp (f t₀ t₀ , e3) where
  f : T → T → Y
  f = to
 
@@ -60,13 +61,13 @@ a function, g, which can be used to encode an arbitrary function using elements 
 vice versa.
 -}
 Encode1 : {A B : Set} → Σ[ g ∈ (A → B) ] ((f : B) → Σ[ n ∈ A ] (g n ≡ f)) → (A ↠ B)
-Encode1 {A} {B} (g , encode) = sur g ((λ z → proj₁ (encode z)) , hlprlem) where
+Encode1 {A} {B} (g , encode) = sur g (λ z → proj₁ (encode z)) hlprlem where
  hlprlem : (x : B) → g (proj₁ (encode x)) ≡ x
  hlprlem x with encode x
  ... | _ , ∀m:gnm≡fm = ∀m:gnm≡fm
 
 Encode2 : {A B : Set} → (A ↠ B) → Σ[ g ∈ (A → B) ] ((f : B) → Σ[ n ∈ A ] (g n ≡ f))
-Encode2 {A} {B} (sur to (from , p₂)) = to , hlprlem where 
+Encode2 {A} {B} (sur to from p₂) = to , hlprlem where 
  hlprlem : (f : B) → Σ[ n ∈ A ] (to n ≡ f)
  hlprlem f = from f , p₂ f
 
