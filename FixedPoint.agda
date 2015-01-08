@@ -29,26 +29,23 @@ lem to from pr g t rewrite pr g = refl
 {-
  A generalization of cantor's proof over arbitrary types. We assume that α is a function with no fixed point,
 and then assume a surjection. From there, we define f as the diagnanalization of our surjection. We then define our
-counter-example function g in terms of α and f. We then extract the representation of g using canLem. We define t₀
-as the element which happens to produce g (there has to be at least one). We then prove that f (t₀ , t₀) ≡ g t₀
+counter-example function g in terms of α and f. We then extract the representation of g using canLem. We define t
+as the element which happens to produce g (there has to be at least one). We then prove that f (t , t) ≡ g t
 by observing that the representation of g is the same diagnalization that we defined f to be. From there, the
 proof goes through straightforwardly.
 -}
 SetFp : {T Y : Set} → (T ↠ (T → Y)) → (α : Y → Y) → Fixpoint α
-SetFp {T} {Y} (sur to from ff'x≡x) α = fp (f t₀ t₀ , e3) where
- f : T → T → Y
- f = to
-
+SetFp {T} {Y} (sur to from ri) α = fp (to t t , e3) where
  g : T → Y
- g x = α (f x x)
+ g x = α (to x x)
 
- t₀ : T
- t₀ = from g
+ t : T
+ t = from g
 
- e2 : f t₀ t₀ ≡ g t₀
- e2 = lem to from ff'x≡x g t₀
+ e2 : to t t ≡ g t
+ e2 = lem to from ri g t
 
- e3 : α (f t₀ t₀) ≡ f t₀ t₀
+ e3 : α (to t t) ≡ to t t
  e3 rewrite sym e2 = refl
 
 SetFx : {T Y : Set} → (α : Y → Y) → NoFixpoint α → ¬ (T ↠ (T → Y))
