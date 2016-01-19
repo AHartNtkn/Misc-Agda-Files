@@ -89,7 +89,7 @@ ChurchLem = SetFx suc (nf hlpr) where
  hlpr _ ()
 
 {-
- This is (partly) a proof that Church's Law (the Church-Turing thesis) is false. In the original notation;
+ This is a proof that Church's Law (Church's thesis) is false. In the original notation;
  ¬ ((f : ℕ → ℕ) → Σ[ n ∈ ℕ ] (n ⊩ f))
 
  Where n ⊩ f means that n is the code for the function f, under some encoding scheme. Here, g (in the type
