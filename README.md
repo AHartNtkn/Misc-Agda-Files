@@ -26,7 +26,7 @@ FixedPoint.agda
 - File created to formalize some of the results in http://arxiv.org/pdf/math/0305282v1.pdf
 - Contains a proof of Lawvere's fixed point theorem over types and functions (I hope to extend it to the full theorem at some point.)
 - Contains a proof of Cantor's Theorem as an instance.
-- Contains disproof of Church-Turing thesis
+- Contains disproof of Church's thesis
 
 MuRecursion.agda
 - Contains an implementation of the μ-recursive functions
